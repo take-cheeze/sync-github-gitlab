@@ -29,4 +29,7 @@ if ! git remote get-url gitlab ; then
     git remote add gitlab "${GITLAB_HOST}/${repo}.git"
 fi
 
-git push --force gitlab "refs/remotes/origin/*:refs/heads/*"
+default_branch=$(basename $(git symbolic-ref refs/remotes/origin/HEAD --short))
+git remote set-head origin --delete
+git push --force gitlab "refs/remotes/origin/${default_branch}:refs/heads/${default_branch}"
+git push --tags --force gitlab "refs/remotes/origin/*:refs/heads/*"
