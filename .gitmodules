@@ -1,0 +1,3 @@
+[submodule "copybara"]
+	path = copybara
+	url = https://github.com/google/copybara.git
