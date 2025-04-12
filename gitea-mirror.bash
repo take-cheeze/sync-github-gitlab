@@ -14,7 +14,22 @@ TEA_TOKEN=$(yq ".logins[] | select(.name=\"${TEA_NAME}\").token" "${TEA_CONFIG}"
 
 CURL_OPTS=(-H 'Accept: application/json' -H "Authorization: token ${TEA_TOKEN}" -H 'Content-Type: application/json')
 
-if ! curl "${CURL_OPTS[@]}" -f "${URL}/repos/${MIRROR_USER}/${ORIG_REPO}" >/dev/null ; then
+if [ -v GITHUB_USER ] && [ "${GITHUB_USER}" = "${ORIG_USER}" ] ; then
+    org=${MIRROR_USER}
+else
+    org=${ORIG_USER}
+    
+    if ! curl "${CURL_OPTS[@]}" -f "${URL}/repos/${org}" >/dev/null ; then
+    cat >./tmp.json <<EOS
+{
+    "username": "${org}"
+}
+EOS
+        curl -f -X POST "${URL}/orgs" "${CURL_OPTS[@]}" -d "@tmp.json" -i
+    fi
+fi
+
+if ! curl "${CURL_OPTS[@]}" -f "${URL}/repos/${org}/${ORIG_REPO}" >/dev/null ; then
     cat >./tmp.json <<EOS
 {
     "auth_username": "${ORIG_USER}",
@@ -30,7 +45,7 @@ if ! curl "${CURL_OPTS[@]}" -f "${URL}/repos/${MIRROR_USER}/${ORIG_REPO}" >/dev/
     "pull_requests": true,
     "releases": true,
     "repo_name": "${ORIG_REPO}",
-    "repo_owner": "${MIRROR_USER}",
+    "repo_owner": "${org}",
     "service": "github",
     "wiki": true
 }
@@ -44,4 +59,4 @@ cat >./tmp.json <<EOS
     "mirror_interval": "24h"
 }
 EOS
-curl -f -X PATCH "${URL}/repos/${MIRROR_USER}/${ORIG_REPO}" "${CURL_OPTS[@]}" -d "@tmp.json" -i
+curl -f -X PATCH "${URL}/repos/${org}/${ORIG_REPO}" "${CURL_OPTS[@]}" -d "@tmp.json" -i
