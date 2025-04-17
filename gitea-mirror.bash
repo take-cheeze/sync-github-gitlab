@@ -19,7 +19,7 @@ if [ -v GITHUB_USER ] && [ "${GITHUB_USER}" = "${ORIG_USER}" ] ; then
 else
     org=${ORIG_USER}
     
-    if ! curl "${CURL_OPTS[@]}" -f "${URL}/repos/${org}" >/dev/null ; then
+    if ! curl "${CURL_OPTS[@]}" -f "${URL}/orgs/${org}" >/dev/null ; then
     cat >./tmp.json <<EOS
 {
     "username": "${org}"
@@ -41,7 +41,7 @@ if ! curl "${CURL_OPTS[@]}" -f "${URL}/repos/${org}/${ORIG_REPO}" >/dev/null ; t
     "milestones": true,
     "mirror": true,
     "mirror_interval": "24h",
-    "private": true,
+    "private": false,
     "pull_requests": true,
     "releases": true,
     "repo_name": "${ORIG_REPO}",
