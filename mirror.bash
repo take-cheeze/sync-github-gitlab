@@ -4,7 +4,7 @@ set -eux -o pipefail
 
 cd $(dirname $0)
 
-export MIRROR_USER=takecheeze
+export MIRROR_USER=take-cheeze
 export TEA_NAME=omv
 export GITHUB_USER=take-cheeze
 
